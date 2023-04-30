@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transitions API Showcase 2023</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-100">
+    <main class="pt-8 px-8 h-screen relative">
+        <section class="container mb-4 mx-auto w-full text-center">
+            <p class="text-base md:text-2xl mb-2">
+                <strong>View Transitions API</strong> is an experimental technology, providing a mechanism for easily
+                creating animated transitions between different DOM states, while also updating the DOM contents in a
+                single step.
+            </p>
+            <p>
+                <a href="https://github.com/Mhdi-kr/transitions-api-showcase-2023">view source code on GitHub</a>
+            </p>
+        </section>
+        <section class="mb-4 flex left-0 absolute z-10 p-8 w-screen transition-all" id="details-container">
+            <div class="w-1/4">
+                <img src="" alt="">
+            </div>
+            <section class="w-3/4 px-4 flex-grow">
+                <h1 class="text-6xl capitalize font-bold mb-2"></h1>
+                <p class="text-gray-700 mb-4 capitalize text-3xl"></p>
+                <p class="text-xl"></p>
+            </section>
+        </section>
+        <section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4" id="list-container">
+        </section>
+    </main>
+</body>
+<script>
+    const container = document.getElementById('list-container')
+    const books = [
+        {
+            title: '12 rules for life',
+            author: 'jordan b. peterson',
+            cover: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/12_Rules_for_Life_Front_Cover_%282018_first_edition%29.jpg/1920px-12_Rules_for_Life_Front_Cover_%282018_first_edition%29.jpg',
+            description: 'Humorous, surprising and informative, Dr. Peterson tells us why skateboarding boys and girls must be left alone, what terrible fate awaits those who criticize too easily, and why you should always pet a cat when you meet one on the street. What does the nervous system of the lowly lobster have to tell us about standing up straight (with our shoulders back) and about success in life? Why did ancient Egyptians worship the capacity to pay careful attention as the highest of gods? What dreadful paths do people tread when they become resentful, arrogant and vengeful?',
+        },
+        {
+            title: 'beyond order: 12 more rules for life',
+            author: 'jordan b. peterson',
+            cover: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Beyond_Order_12_More_Rules_For_Life_1st_Edition_Cover_Canadian.jpg',
+            description: 'While chaos, in excess, threatens us with instability and anxiety, unchecked order can petrify us into submission. Beyond Order provides a call to balance these two fundamental principles of reality itself, and guides us along the straight and narrow path that divides them.',
+        },
+        {
+            title: 'deep work',
+            author: 'cal newport',
+            cover: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1447957962i/25744928.jpg',
+            description: 'Deep work is the ability to focus without distraction on a cognitively demanding task. It\'s a skill that allows you to quickly master complicated information and produce better results in less time. Deep work will make you better at what you do and provide the sense of true fulfillment that comes from craftsmanship. In short, deep work is like a super power in our increasingly competitive twenty-first century economy. And yet, most people have lost the ability to go deep-spending their days instead in a frantic blur of e-mail and social media, not even realizing there\'s a better way.',
+        },
+        {
+            title: 'essential discrete mathematics for computer science',
+            author: 'harry lewis',
+            cover: 'https://m.media-amazon.com/images/I/91GBx8x33JL.jpg',
+            description: 'Proven in the classroom, Essential Discrete Mathematics for Computer Science aims to teach mathematical reasoning as well as concepts and skills by stressing the art of proof. It is fully illustrated in color, and each chapter includes a concise summary as well as a set of exercises. The text requires only precalculus, and where calculus is needed, a quick summary of the basic facts is provided.',
+        },
+        {
+            title: 'atomic habits',
+            author: 'james clear',
+            cover: 'https://m.media-amazon.com/images/I/81bGKUa1e0L.jpg',
+            description: 'No matter your goals, Atomic Habits offers a proven framework for improving--every day. James Clear, one of the world\'s leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results.',
+        },
+        {
+            title: 'power of habits',
+            author: 'charles duhigg',
+            cover: 'https://m.media-amazon.com/images/I/71QKcer7jxL._AC_UF1000,1000_QL80_.jpg',
+            description: 'In The Power of Habit, award-winning business reporterCharles Duhigg takes us to the thrilling edge of scientific discoveries that explain why habits exist and how they can be changed. Distilling vast amounts of information into engrossing narratives that take us from the boardrooms of Procter & Gamble to the sidelines of the NFL to the front lines of the civil rights movement, Duhigg presents a whole new understanding of human nature and its potential. At its core, The Power of Habit contains an exhilarating argument: The key to exercising regularly, losing weight, being more productive, and achieving success is understanding how habits work. As Duhigg shows, by harnessing this new science, we can transform our businesses, our communities, and our lives.',
+        }
+    ]
+
+    function expandView(element, book) {
+        const detailsContainer = document.getElementById('details-container')
+
+        const [div, section] = detailsContainer.children
+        const [img] = div.children
+        const [title, author, description] = section.children
+
+        element.style.viewTransitionName = 'full-embed';
+
+        const displayBookDetails = () => {
+            img.setAttribute('src', book.cover)
+            detailsContainer.style.backgroundColor = 'white'
+            title.innerHTML = book.title
+            author.innerHTML = book.author
+            description.innerHTML = book.description
+            detailsContainer.style.height = '100%'
+        };
+
+        if (!document.startViewTransition) {
+            displayBookDetails();
+            return;
+        }
+        const transition = document.startViewTransition(() => {
+            element.style.viewTransitionName = '';
+            div.style.viewTransitionName = 'full-embed';
+            displayBookDetails()
+        });
+    }
+
+    function handleBookClick(element, book) {
+        return expandView(element, book)
+    }
+
+    function bookNodeFactory(book) {
+        const section = document.createElement("section")
+        section.setAttribute('class', 'h-80 w-full bg-slate-100 hover:scale-105 shadow-md hover:shadow-lg transition-all cursor-pointer')
+        section.style.background = `url(${book.cover})`
+        section.style.backgroundPosition = 'top'
+        section.style.backgroundSize = 'cover'
+        section.onclick = (e) => handleBookClick(section, book)
+        return section
+    }
+
+    const bookNodes = books.map(bookNodeFactory)
+    container.append(...bookNodes)
+</script>
+
+</html>
